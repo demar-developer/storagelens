@@ -3,7 +3,7 @@
 What changed in each version of StorageLens, newest first. This file is the one place the changes are written down:
 the website's "What's new" and the notes on each GitHub release are taken from it.
 
-## 0.4.0 preview (23 November 2026)
+## 0.4.0 preview (24 November 2026)
 
 The first public preview.
 
