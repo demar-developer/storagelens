@@ -1,0 +1,55 @@
+name: Report a problem
+description: Something did not work, looked wrong or was hard to understand.
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for taking the time. StorageLens sends nothing by itself, so what you write here is all we see.
+        Leave out anything private: a screenshot shows your folder names, so crop it or describe it instead.
+  - type: dropdown
+    id: app
+    attributes:
+      label: Which app?
+      options:
+        - StorageLens Standard
+        - StorageLens Telemetry
+        - StorageLens Atlas
+        - StorageLens Strata
+        - StorageLens Mosaic
+        - StorageLens Ledger
+        - StorageLens Skyline
+        - Setup, before any app opened
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Version
+      description: On the app's About page, or in Windows Settings > Apps > Installed apps.
+      placeholder: 0.4.0 preview
+    validations:
+      required: true
+  - type: textarea
+    id: happened
+    attributes:
+      label: What happened?
+      description: What you did, what you saw, and what you expected to see instead.
+    validations:
+      required: true
+  - type: textarea
+    id: again
+    attributes:
+      label: Does it happen every time?
+      description: If you can make it happen again, the steps from opening the app.
+  - type: input
+    id: windows
+    attributes:
+      label: Windows version
+      description: Windows Settings > System > About, under "Windows specifications".
+      placeholder: Windows 11 24H2
+  - type: textarea
+    id: pictures
+    attributes:
+      label: Pictures
+      description: Drag a screenshot here if it helps.

@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Windows says "Windows protected your PC"
+    url: https://github.com/demar-developer/storagelens#download-and-install
+    about: That is expected for now. The files are not code-signed yet. Choose More info, then Run anyway.
+  - name: Get the newest version
+    url: https://github.com/demar-developer/storagelens/releases/latest
+    about: All seven apps, with what changed.

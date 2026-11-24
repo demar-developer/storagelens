@@ -1,0 +1,28 @@
+name: Suggest something
+description: A view you miss, a question the app should answer, or a layout that could be better.
+labels: ["enhancement"]
+body:
+  - type: textarea
+    id: idea
+    attributes:
+      label: What would you like StorageLens to do?
+      description: The thing you were trying to find out or get done says more than the feature you have in mind.
+    validations:
+      required: true
+  - type: dropdown
+    id: app
+    attributes:
+      label: Which app is this about?
+      options:
+        - All of them
+        - StorageLens Standard
+        - StorageLens Telemetry
+        - StorageLens Atlas
+        - StorageLens Strata
+        - StorageLens Mosaic
+        - StorageLens Ledger
+        - StorageLens Skyline
+  - type: textarea
+    id: more
+    attributes:
+      label: Anything else?
