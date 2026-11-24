@@ -1,0 +1,9 @@
+Doto-ExtraBold.ttf in this folder is a Modified Version of Doto ExtraBold (static instance, wght 800) under the
+SIL Open Font License 1.1 (Doto-OFL.txt). The Doto project declares no Reserved Font Name.
+
+One glyph is changed: the full stop (U+002E, "period"). The original draws it as a cross of five dots on the
+baseline, which between digits reads as a plus sign ("10.50" as "10+50"). Here it is a block of four dots, two by
+two, on the baseline and the row above, centred in the digits' width: a plain decimal point at every size.
+Its advance width is unchanged (600 units); its left side bearing follows the new outline (159 units).
+
+No other glyph, table or name is changed. StorageLens uses this face for Ledger's figures only.

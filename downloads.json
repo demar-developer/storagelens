@@ -1,0 +1,77 @@
+{
+ "version": "0.4.0 preview",
+ "tag": "v0.4.0-preview",
+ "date": "23 November 2026",
+ "files": [
+  {
+   "name": "StorageLens Standard",
+   "layout": "Standard",
+   "about": "The original layout: a sidebar, an overview and plain lists.",
+   "file": "StorageLens-Standard-Setup.exe",
+   "bytes": 40063488,
+   "sha256": "3ac3f6d8141d87a4b67495f2dec46f33749cc95b8c6dbf5c4716425717f2e0bf",
+   "version": "0.4.0 preview",
+   "url": "https://github.com/demar-developer/storagelens/releases/latest/download/StorageLens-Standard-Setup.exe"
+  },
+  {
+   "name": "StorageLens Telemetry",
+   "layout": "Telemetry",
+   "about": "An instrument console: your drive on a dial, with readouts beside it.",
+   "file": "StorageLens-Telemetry-Setup.exe",
+   "bytes": 62731776,
+   "sha256": "12370fb68322536338c1f0b63514c6d1b053ff72fa10172da4507eafc05da8c8",
+   "version": "0.4.0 preview",
+   "url": "https://github.com/demar-developer/storagelens/releases/latest/download/StorageLens-Telemetry-Setup.exe"
+  },
+  {
+   "name": "StorageLens Atlas",
+   "layout": "Atlas",
+   "about": "A map of your drive on every page, with lenses for size, risk, growth and OneDrive.",
+   "file": "StorageLens-Atlas-Setup.exe",
+   "bytes": 65607168,
+   "sha256": "fd5ff003dd7576eb89e579dea7873af7aa5a1c1098d32e2f9dfbde8fa1aff6bf",
+   "version": "0.4.0 preview",
+   "url": "https://github.com/demar-developer/storagelens/releases/latest/download/StorageLens-Atlas-Setup.exe"
+  },
+  {
+   "name": "StorageLens Strata",
+   "layout": "Strata",
+   "about": "Your folders as columns to step through, made for the keyboard.",
+   "file": "StorageLens-Strata-Setup.exe",
+   "bytes": 61036544,
+   "sha256": "ca95ca4a450d49bb82801776f59196a88751400b750afbbe62b1a121a82d7dcb",
+   "version": "0.4.0 preview",
+   "url": "https://github.com/demar-developer/storagelens/releases/latest/download/StorageLens-Strata-Setup.exe"
+  },
+  {
+   "name": "StorageLens Mosaic",
+   "layout": "Mosaic",
+   "about": "A board of tiles, each one a view of your storage.",
+   "file": "StorageLens-Mosaic-Setup.exe",
+   "bytes": 62782464,
+   "sha256": "12db6091e8759312e17f8b3978b3d9a394d0a485cf50b9f1454f833ea05106e9",
+   "version": "0.4.0 preview",
+   "url": "https://github.com/demar-developer/storagelens/releases/latest/download/StorageLens-Mosaic-Setup.exe"
+  },
+  {
+   "name": "StorageLens Ledger",
+   "layout": "Ledger",
+   "about": "Your storage as a printed report: plain figures on paper.",
+   "file": "StorageLens-Ledger-Setup.exe",
+   "bytes": 61413376,
+   "sha256": "adf761b0f8075750606012dab23f62664f6973a5a4f87a7e19653dbe95c715b0",
+   "version": "0.4.0 preview",
+   "url": "https://github.com/demar-developer/storagelens/releases/latest/download/StorageLens-Ledger-Setup.exe"
+  },
+  {
+   "name": "StorageLens Skyline",
+   "layout": "Skyline",
+   "about": "Your folders as a city, the biggest standing tallest.",
+   "file": "StorageLens-Skyline-Setup.exe",
+   "bytes": 63473664,
+   "sha256": "64e18d6bcbccba23869211cc3cd3876d7c1c2cb1a008b20a6182d4cbb6384279",
+   "version": "0.4.0 preview",
+   "url": "https://github.com/demar-developer/storagelens/releases/latest/download/StorageLens-Skyline-Setup.exe"
+  }
+ ]
+}
