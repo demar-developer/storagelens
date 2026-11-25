@@ -3,10 +3,12 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>StorageLens: make sense of your storage</title>
+<title>StorageLens: make sense of everything on your PC</title>
 <meta name="description" content="StorageLens is a free Windows app that maps your drives, explains what each folder is for, and answers questions in your own words with AI that can run on your PC. It reads names, sizes and dates, never what is in your files, and it changes nothing.">
 <meta name="theme-color" content="#0b1322">
+<link rel="canonical" href="https://demar-developer.github.io/storagelens/">
 <meta property="og:type" content="website">
+<meta property="og:url" content="https://demar-developer.github.io/storagelens/">
 <meta property="og:title" content="StorageLens: make sense of everything on your PC">
 <meta property="og:description" content="A free Windows app that maps your drives and explains what each folder is doing there. Read-only by design: it measures everything and changes nothing.">
 <meta property="og:image" content="https://demar-developer.github.io/storagelens/assets/social-preview.jpg">
@@ -524,7 +526,7 @@
       <div class="get-steps">
         <h3>What happens next</h3>
         <ol>
-          <li><b>Windows will ask you to confirm.</b> The files are not code-signed yet, so on a downloaded copy Windows shows “Windows protected your PC”: choose <kbd>More info</kbd>, then <kbd>Run anyway</kbd>. Your browser may also say the file is not commonly downloaded: choose to keep it. Windows asks this of any new unsigned program; it says nothing about what the program does.</li>
+          <li><b>Windows will ask you to confirm.</b> The files are not code-signed yet, so on a downloaded copy Windows shows “Windows protected your PC”: choose <kbd>Run anyway</kbd>; if you don't see it, choose <kbd>More info</kbd> first. Your browser may also say the file is not commonly downloaded: choose to keep it. Windows asks this of any new unsigned program; it says nothing about what the program does. <b>Where Smart App Control is on, expect StorageLens to be blocked:</b> it stops apps that are not signed and that Microsoft does not know yet, and it offers no <kbd>Run anyway</kbd>. Windows Security &gt; App &amp; browser control shows whether it is on; Windows has no setting to allow a single app there.</li>
           <li><b>Setup wears the look you chose.</b> It shows where the app and your scans will go, and installs for your Windows account only.</li>
           <li><b>Press Start first scan.</b> A new install starts empty. A scan reads names, sizes, dates and OneDrive states, never what is in a file.</li>
           <li><b>Later.</b> To update, download the newer file and open it: your scans and notes stay, and the app does not check for updates itself. To remove it, use Windows Settings &gt; Apps &gt; Installed apps; your scans and notes are kept until you delete that folder yourself.</li>
