@@ -1,8 +1,8 @@
 // Appearance: the look that is on, in words (its line, its text and its four ideas) with its own download button.
 // When the look changes, the words arrive in turn.
-import { enter } from '../../js/motion/live.mjs';
-import { once } from '../../js/core.mjs';
-import { ids, look, current, onLook } from '../../js/looks.mjs';
+import { enter } from './motion/live.mjs';
+import { once } from './core.mjs';
+import { ids, look, current, onLook } from './looks.mjs';
 
 export default function appearance(el) {
   const q = (s) => el.querySelector(s);

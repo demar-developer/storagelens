@@ -1,9 +1,7 @@
-/* StorageLens landing page, version 3, the site's home page (../index.html): the first page's whole story, wearing
-   whichever look is chosen.
-   The rules below the look blocks are the first page's (site/v1/styles.css), with every fixed colour turned into a
-   variable and every corner scaled by the look's corner factor (--rk). html[data-look] sets the variables from the
-   app's own theme values (engine/crates/sl-app/ui/theme.slint in the development checkout, 22 November 2026).
-   In the Standard look the page is the first page (../v1/). Motion rules: site/README.md. */
+/* StorageLens landing page (index.html): the whole story, wearing whichever of the seven looks is chosen.
+   Every colour is a variable and every corner is scaled by the look's corner factor (--rk). html[data-look] sets
+   the variables from the app's own theme values (engine/crates/sl-app/ui/theme.slint in the development checkout,
+   22 November 2026). Motion rules: site/README.md. */
 
 :root {
   --font: "Segoe UI Variable Text", "Segoe UI", system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif;
@@ -20,7 +18,7 @@
   --dur-paper: 900ms;
 }
 
-/* Shades the first page used once or twice, derived here from each look's own colours. A theme can be worn by the
+/* Shades used once or twice, derived here from each look's own colours. A theme can be worn by the
    whole page (html[data-look]) or by one element (data-theme: the mixer's window). */
 html, [data-theme] {
   --well: var(--bg-deep); --panel: var(--bg-deep); --callout: var(--surface2); --bubble-border: var(--border-strong); --node: var(--accent-soft);
@@ -28,7 +26,7 @@ html, [data-theme] {
   --lens-bg: color-mix(in srgb, var(--surface) 62%, var(--bg-deep)); --packet: var(--accent-ink); --packet-warm: var(--warm); --struck: var(--faint);
   --tick-ink: color-mix(in srgb, var(--ink) 80%, var(--bg)); --line-end: var(--accent-ink); --handle-a: var(--control-border); --handle-b: var(--border-strong);
 }
-/* Standard: exactly the first page's values (the page is checked against site/v1/index.html, class by class). */
+/* Standard: the values the page was first drawn with, before it had looks. */
 html[data-look="standard"], [data-theme="standard"] {
   --well: #08101d; --panel: #09101e; --callout: #142340; --bubble-border: #35578e; --node: #14264a;
   --raw-ink: #8292aa; --raw-dim: #5d6d86; --raw-faint: #46546c; --lens-bg: #0e1a31; --packet: #b9d8ff; --packet-warm: #f1d7a3; --struck: #7f8ea6;
@@ -115,13 +113,13 @@ html[data-look="skyline"], [data-theme="skyline"] {
 }
 
 /* Ledger's readings are set in Doto, the dot-matrix face the app bundles (SIL Open Font License: assets/fonts/Doto-OFL.txt). */
-@font-face { font-family: Doto; src: url("../assets/fonts/Doto-ExtraBold.ttf") format("truetype"); font-weight: 800; font-display: swap; }
+@font-face { font-family: Doto; src: url("assets/fonts/Doto-ExtraBold.ttf") format("truetype"); font-weight: 800; font-display: swap; }
 
 /* The look changes behind one moving edge: the new page is revealed through a growing circle (js/looks.mjs). */
 ::view-transition-old(root), ::view-transition-new(root) { animation: none; mix-blend-mode: normal; }
 ::view-transition-new(root) { z-index: 2; }
 
-/* ───────────── The first page's rules, with colours and corners as variables ───────────── */
+/* ───────────── The page's rules, with colours and corners as variables ───────────── */
 
 *, *::before, *::after { box-sizing: border-box; }
 html { scroll-behavior: smooth; scroll-padding-top: 84px; -webkit-text-size-adjust: 100%; }
@@ -323,14 +321,14 @@ html[data-motion="calm"] .btn:hover, html[data-motion="calm"] .btn:active { tran
 .lrow-raw { border: 1px dashed color-mix(in srgb, var(--faint) 20%, transparent); color: var(--raw-dim); font-family: var(--mono); }
 .lrow-raw .lrow-ic { color: var(--raw-faint); }
 .lrow-raw b { display: block; font-weight: 400; font-size: .98rem; color: var(--raw-ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.lrow-raw span { display: block; font-size: .78rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.lrow-raw div > span { display: block; font-size: .78rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .lrow-q { width: 26px; height: 26px; border-radius: 50%; display: grid; place-items: center; border: 1px dashed color-mix(in srgb, var(--faint) 35%, transparent); font-family: var(--font); font-size: .86rem; font-weight: 600; }
 .lrow-ic { width: 40px; height: 40px; border-radius: calc(10px * var(--rk)); display: grid; place-items: center; }
 .lrow-ic .ic { width: 21px; height: 21px; }
 .lrow-known { background: var(--surface); border: 1px solid var(--border); }
 .lrow-known .lrow-ic { background: var(--tb); color: var(--tc); }
 .lrow-known b { display: block; font-weight: 600; font-size: .98rem; color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.lrow-known span { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; line-clamp: 2; overflow: hidden; font-size: .82rem; line-height: 1.35; color: var(--muted); }
+.lrow-known div > span { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; line-clamp: 2; overflow: hidden; font-size: .82rem; line-height: 1.35; color: var(--muted); }
 .tag { display: inline-block; padding: 3px 9px; border-radius: calc(6px * var(--rk)); font-size: .76rem; font-weight: 600; white-space: nowrap; background: var(--tb); color: var(--tc); border: 1px solid var(--tl); }
 .t-protected { --tc: var(--red); --tb: var(--red-bg); --tl: var(--red-border); }
 .t-backup { --tc: var(--warm); --tb: var(--warm-bg); --tl: var(--warm-border); }
@@ -453,7 +451,7 @@ html[data-motion="calm"] .btn:hover, html[data-motion="calm"] .btn:active { tran
 .ametric:first-child { border-left: 0; }
 .ametric span { display: block; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .ametric b { display: block; font: 600 1.95em/1.3 var(--display); font-variant-numeric: tabular-nums; white-space: nowrap; }
-.ametric small { display: block; font-size: .88em; color: var(--faint); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ametric small { display: block; font-size: .88em; color: var(--faint); }
 .agrid { flex: 1; min-height: 0; display: grid; grid-template-columns: 1.52fr 1fr; gap: 1.2em; padding-bottom: 1.2em; }
 .agrid-1 { grid-template-columns: 1fr; }
 .amapc { display: flex; flex-direction: column; padding: 1.1em 1.2em 1em; min-height: 0; }
@@ -493,7 +491,7 @@ button.tile:hover { filter: brightness(1.14); }
 .insp-k { font-size: .82em; font-weight: 600; letter-spacing: .14em; color: var(--muted); }
 .insp-name { font: 700 1.8em/1.2 var(--display); }
 .insp-path { font: 400 .92em/1.4 var(--mono); color: var(--muted); word-break: break-all; }
-.insp-size { display: grid; grid-template-columns: 1fr 1fr; padding: .9em 1.1em; border: 1px solid var(--border); border-radius: calc(.6em * var(--rk)); background: var(--well); }
+.insp-size { display: grid; grid-template-columns: 1fr 1fr; align-items: end; padding: .9em 1.1em; border: 1px solid var(--border); border-radius: calc(.6em * var(--rk)); background: var(--well); }
 .insp-size span { display: block; color: var(--muted); }
 .insp-size b { font: 600 1.7em var(--display); }
 .insp-h { font: 600 1.22em var(--display); margin-top: .3em; }
@@ -503,9 +501,9 @@ button.tile:hover { filter: brightness(1.14); }
 .insp-src { color: var(--faint); font-size: .9em; }
 .insp-trend { display: flex; align-items: flex-end; gap: .5em; height: 4.6em; }
 .insp-trend i { width: 2.3em; background: var(--accent); border-radius: calc(.2em * var(--rk)) calc(.2em * var(--rk)) 0 0; transform-origin: 50% 100%; }
-.insp-select { display: flex; justify-content: space-between; align-items: center; padding: .7em 1em; border: 1px solid var(--control-border); border-radius: calc(.5em * var(--rk)); background: var(--surface); position: relative; overflow: hidden; }
-.insp-select span { position: absolute; left: 1em; right: 2.4em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.insp-select::after { content: ""; margin-left: auto; width: .55em; height: .55em; border-right: 1.5px solid var(--muted); border-bottom: 1.5px solid var(--muted); transform: rotate(45deg) translateY(-.2em); }
+.insp-select { display: grid; grid-template-columns: minmax(0, 1fr) auto; column-gap: .9em; align-items: center; padding: .7em 1em; border: 1px solid var(--control-border); border-radius: calc(.5em * var(--rk)); background: var(--surface); position: relative; overflow: hidden; }
+.insp-select span { grid-area: 1 / 1; line-height: 1.3; }
+.insp-select::after { content: ""; grid-area: 1 / 2; width: .55em; height: .55em; border-right: 1.5px solid var(--muted); border-bottom: 1.5px solid var(--muted); transform: rotate(45deg) translateY(-.2em); }
 .insp-select { min-height: 2.9em; flex: none; }
 .insp-select [data-select-b] { opacity: 0; color: var(--ink); }
 .insp-save { align-self: flex-start; flex: none; }
@@ -564,7 +562,7 @@ html[data-motion="calm"] .app-layer, html[data-motion="calm"] .app-insp, html[da
 .chat-h { display: flex; align-items: center; gap: .8em; padding: 1em 1.3em .9em; border-bottom: 1px solid var(--border); flex: none; }
 .chat-h .ic { color: var(--blue); }
 .chat-h b { display: block; font-weight: 600; font-size: 1.12em; }
-.chat-h span { display: block; color: var(--faint); font-size: .86em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.chat-h span { display: block; color: var(--faint); font-size: .86em; line-height: 1.3; }
 .chat-log { flex: 1; min-height: 0; overflow: hidden; display: flex; flex-direction: column; justify-content: flex-end; gap: .9em; padding: 1em 1.3em; }
 .chat-me { align-self: flex-end; max-width: 92%; padding: .65em 1em; border-radius: calc(.9em * var(--rk)); border-bottom-right-radius: calc(.25em * var(--rk)); background: var(--bubble); }
 .chat-a { display: grid; gap: .4em; }
@@ -733,7 +731,7 @@ html[data-motion="calm"] .packet { animation: none !important; opacity: 0; }
 .sig-ic .ic { width: 21px; height: 21px; }
 .sig[aria-selected="true"] .sig-ic { background: var(--warm-bg); color: var(--warm); }
 .sig b { display: block; font: 500 .98rem/1.3 var(--mono); color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.sig span { display: block; font-size: .84rem; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.sig span:not([class]) { display: block; font-size: .84rem; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .sig .tag { --tc: var(--warm); --tb: var(--warm-bg); --tl: var(--warm-border); }
 .sig .tag.t-info { --tc: var(--blue); --tb: var(--blue-bg); --tl: var(--blue-border); }
 .js .signals:not(.is-swept) .sig .tag { opacity: 0; }
@@ -753,6 +751,8 @@ html[data-motion="calm"] .packet { animation: none !important; opacity: 0; }
 .sd-facts .ic { color: var(--green); margin-top: 3px; }
 .sd-row { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
 @media (max-width: 900px) { .signals { grid-template-columns: 1fr; } .signals-detail { min-height: 0; } }
+/* On a phone the label goes under the name, so a name like invoice.pdf.exe is read to its end. */
+@media (max-width: 560px) { .sig { grid-template-columns: 42px minmax(0, 1fr); row-gap: 6px; } .sig .tag { grid-column: 2; justify-self: start; } }
 
 /* ── Promises ── */
 .nevers { display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; text-align: center; }
@@ -836,7 +836,7 @@ html:not(.js) .never-word i { transform: none; }
 .dl-row:first-child { border-top: 0; }
 .dl-row b { font-weight: 600; }
 .dl-row p { color: var(--muted); font-size: .93rem; line-height: 1.45; }
-.dl-size { color: var(--faint); font: 500 .86rem var(--mono); white-space: nowrap; }
+.dl-size { color: var(--muted); font: 500 .86rem var(--mono); white-space: nowrap; }
 .dl-row.is-on { background: var(--accent-soft); box-shadow: inset 3px 0 0 var(--accent); }
 .get-links { display: flex; flex-wrap: wrap; gap: 8px 22px; font-size: .92rem; }
 .get-links a { color: var(--accent-ink); text-decoration: underline; text-underline-offset: 3px; }
@@ -850,10 +850,10 @@ html:not(.js) .never-word i { transform: none; }
 
 @media print { .nav, .hero-bg { display: none; } .js [data-reveal], .js [data-split] { opacity: 1 !important; } }
 
-/* ───────────── Version 3's own rules: what a look changes besides colour, and the pieces that choose one ───────────── */
+/* ───────────── What a look changes besides colour, and the pieces that choose one ───────────── */
 
 /* Type follows the look: Telemetry's capitals in Bahnschrift, Strata's and Ledger's labels in a monospace face,
-   Ledger's figures in Doto. In Standard these are the first page's values. */
+   Ledger's figures in Doto. */
 .display { font-weight: var(--title-weight); letter-spacing: var(--display-track); text-transform: var(--title-case); }
 .title, .card h3, .plan h3, .quad h3, .step h3, .sd-h, .shot figcaption b, .never-word, .get-steps h3, .get-h { font-weight: var(--title-weight); text-transform: var(--title-case); }
 .title { letter-spacing: var(--title-track); }

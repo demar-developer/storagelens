@@ -1,4 +1,4 @@
-// The StorageLens window redrawn in HTML in each of its seven layouts, for the demos of the pages that have looks:
+// The StorageLens window redrawn in HTML in each of its seven layouts, for the page's demos:
 // Standard's sidebar and cards, Telemetry's dial and readouts, Atlas's map, Strata's columns, Mosaic's board,
 // Ledger's report and Skyline's city. A layout decides where things sit; the colours, corners and type come from the
 // theme (the stylesheet's variables), so any layout can be drawn in any theme.

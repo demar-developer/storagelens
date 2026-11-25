@@ -154,10 +154,6 @@ export function shell({ view = 'overview', title = 'Overview', sub = '', chat = 
 </div>`;
 }
 
-export function setRail(app, view) {
-  app.querySelectorAll('.rail-i').forEach((r) => r.classList.toggle('is-on', +r.dataset.rail === RAIL_KEY[view]));
-}
-
 export const driveCard = () => `<div class="acard adrive">
   <span class="adrive-ic">${icon('drive')}</span>
   <div class="adrive-b"><div class="adrive-t"><b>${DRIVE.letter}&nbsp; Data</b><span>${fmt(DRIVE.free)} free</span></div>

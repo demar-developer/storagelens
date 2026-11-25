@@ -1,9 +1,12 @@
-// The Assistant, as a demo you operate: ask, and the window answers by changing what it shows. Replies are scripted
-// (no model runs on a web page); their wording, pages and numbers are the app's own for the demo library. Another
-// agent, "Hermes", asks first with a card, as every outside agent does.
+// The Assistant, as a demo you operate, in whichever layout is on: ask, and the window answers by changing what it
+// shows. Replies are scripted (no model runs on a web page); their wording, pages and numbers are the app's own for
+// the demo library. Another agent, "Hermes", asks first with a card, as every outside agent does. The window is drawn
+// by js/layouts.mjs: a change of look redraws it in the new layout and keeps the conversation and the page that is up.
 import { animate, enter, exit } from './motion/live.mjs';
 import { motion } from './motion/motion.mjs';
 import * as K from './app-kit.mjs';
+import { layout, heading, setNav, fillMaps, agentPage, plainPage, HEADS } from './layouts.mjs';
+import { current, onLook } from './looks.mjs';
 
 const MODEL = 'granite-4.2-3b';
 const NOTE = `A guess by ${MODEL} on this PC (1.1 s): it picked this page, which StorageLens built. The numbers come from your scan.`;
@@ -15,113 +18,108 @@ const QUESTIONS = {
 };
 const wait = (ms) => new Promise((r) => setTimeout(r, motion.calm ? Math.min(ms, 120) : ms));
 const done = (a) => a.finished.then(() => a.cancel(), () => {});
+const whenIdle = window.requestIdleCallback ? (f) => requestIdleCallback(f, { timeout: 1500 }) : (f) => setTimeout(f, 200);
 
 export default function assistant(stage) {
   const slot = stage.querySelector('[data-ask-app]');
-  slot.insertAdjacentHTML('beforeend', K.shell({ chat: true, agentButton: true }));
-  slot.classList.add('is-live');
-  const app = slot.querySelector('.app'), page = app.querySelector('[data-app-page]');
-  const log = app.querySelector('[data-chat-log]'), form = app.querySelector('[data-chat-form]'), input = app.querySelector('[data-chat-input]');
-  const title = app.querySelector('[data-app-title]'), sub = app.querySelector('[data-app-sub]');
   const chips = [...stage.querySelectorAll('[data-ask]')];
   const projects = K.TREE.kids[2];
-  let busy = false, trail = [K.TREE];
+  slot.classList.add('is-live');
+  let id = '', L = null, app, page, log, input, title, sub;
+  let busy = false, trail = [K.TREE], current_ = 'overview';
 
-  // ── The pages ──
-  const notice = `<div class="acard anotice is-on">${K.icon('warn')}<span>Read-only metadata inventory. Categories, inferred owners and cleanup suggestions are heuristics, not proof.</span></div>`;
+  // ── The pages. An answer is the same blocks in every layout; each layout frames them its own way. ──
+  const list = (head, rows) => `<div class="acard alist"><div class="alist-h">${head.map((h) => `<span>${h}</span>`).join('')}</div>${rows}</div>`;
   const pages = {
-    overview: () => ({
-      view: 'overview', title: 'Overview', sub: 'Make room for what matters. See where space goes. Review before removing anything.',
-      html: `${K.driveCard()}${notice}${K.overviewMetrics()}<div class="agrid agrid-1">${K.mapCard()}</div>`,
-    }),
+    overview: () => ({ view: 'overview', html: L.overview({ compact: true }) }),
     projects: () => ({
-      view: '', title: "What's using Projects", sub: BUILT(2),
-      html: `${K.driveCard()}${K.banner('Assistant', 'Here is what is using Projects.')}
+      view: '', title: "What's using Projects", sub: BUILT(2), who: 'Assistant',
+      html: agentPage(id, { who: 'Assistant', said: 'Here is what is using Projects.', note: BUILT(2), blocks: `
         ${K.metrics([['Projects on disk', K.fmt(projects.bytes), '1,332 files']], 'ametrics-1')}
         <div class="acard abars"><div class="acard-h"><div><b>Largest in Projects</b></div></div>
-        ${projects.kids.map((k) => `<div class="abar"><span>${k.name}</span><u><i style="--w:${(k.bytes / projects.kids[0].bytes * 100).toFixed(1)}%"></i></u><b>${K.fmt(k.bytes)}</b></div>`).join('')}</div>`,
+        ${projects.kids.map((k) => `<div class="abar"><span>${k.name}</span><u><i style="--w:${(k.bytes / projects.kids[0].bytes * 100).toFixed(1)}%"></i></u><b>${K.fmt(k.bytes)}</b></div>`).join('')}</div>` }),
     }),
     plan: () => ({
-      view: '', title: 'Freeing space on D:', sub: BUILT(7),
-      html: `${K.driveCard()}${K.banner('Assistant', 'Here is a plan to free space on D:.')}
+      view: '', title: 'Freeing space on D:', sub: BUILT(7), who: 'Assistant',
+      html: agentPage(id, { who: 'Assistant', said: 'Here is a plan to free space on D:.', note: BUILT(7), blocks: `
         ${K.metrics([['Free on D:', K.fmt(K.DRIVE.free), `of ${K.fmt(K.DRIVE.total)} · right now`], ['Used on D:', K.fmt(K.DRIVE.used), `of ${K.fmt(K.DRIVE.total)} · right now`]], 'ametrics-2')}
         <div class="acard aplan"><div class="aplan-h"><b>Worth a review on D:, largest first</b><span>A proposal: nothing changes until you confirm each step.</span></div>
-        ${K.CANDIDATES.map((c) => `<div class="aplan-r"><span class="atag t-backup">Review</span><div><b>${c.name}</b><p>${c.why}</p></div><strong>${K.fmt(c.bytes)}</strong></div>`).join('')}</div>`,
+        ${K.CANDIDATES.map((c) => `<div class="aplan-r"><span class="atag t-backup">Review</span><div><b>${c.name}</b><p>${c.why}</p></div><strong>${K.fmt(c.bytes)}</strong></div>`).join('')}</div>` }),
     }),
     growth: () => ({
-      view: 'growth', title: "What's growing", sub: 'Catch what’s accumulating. Folder snapshots reveal growth after your second comparable scan.',
-      html: `${K.driveCard()}
-        <div class="acard anote">${K.icon('info')}<div><b>What changed between scans</b><p>Folder disk-allocation changes, compared with the previous completed scan of the same roots. Parent and child rows overlap; do not add them together.</p></div></div>
-        <div class="acard alist"><div class="alist-h"><span>Name / location</span><span>On disk</span><span>Change</span></div>
-        ${K.GROWTH.map((g) => `<div class="alist-r"><div><b>${g.name}</b><code>${g.where}</code></div><strong>${K.fmt(g.bytes)}</strong><span class="up">+${K.fmt(g.growth)}</span></div>`).join('')}</div>`,
+      view: 'growth',
+      html: plainPage(id, `<div class="acard anote">${K.icon('info')}<div><b>What changed between scans</b><p>Folder disk-allocation changes, compared with the previous completed scan of the same roots. Parent and child rows overlap; do not add them together.</p></div></div>
+        ${list(['Name / location', 'On disk', 'Change'], K.GROWTH.map((g) => `<div class="alist-r"><div><b>${g.name}</b><code>${g.where}</code></div><strong>${K.fmt(g.bytes)}</strong><span class="up">+${K.fmt(g.growth)}</span></div>`).join(''))}`),
     }),
     videos: () => ({
-      view: 'files', title: 'Largest files', sub: 'The files that add up. Largest measured allocations first. Dates and file sizes are clues, not verdicts.',
-      html: `${K.driveCard()}${K.banner('Hermes', 'Here are the biggest video files.')}
-        <div class="acard alist"><div class="alist-h"><span>Name / location</span><span>On disk</span><span>Importance</span></div>
-        ${K.VIDEOS.map((v) => `<div class="alist-r"><div><b>${v.name}</b><code>D:/…/Alex/Videos/Book trailers</code></div><strong>${K.fmt(v.bytes)}</strong><span>${K.tag('backup')}</span></div>`).join('')}</div>`,
+      view: 'files', who: 'Hermes',
+      html: agentPage(id, { who: 'Hermes', said: 'Here are the biggest video files.', note: 'Hermes asked first, and you said yes. The numbers come from StorageLens, not from the agent.', blocks:
+        list(['Name / location', 'On disk', 'Importance'], K.VIDEOS.map((v) => `<div class="alist-r"><div><b>${v.name}</b><code>D:/…/Alex/Videos/Book trailers</code></div><strong>${K.fmt(v.bytes)}</strong><span>${K.tag('backup')}</span></div>`).join('')) }),
     }),
   };
 
-  // ── Changing the page: the old one lifts away, the new one's cards rise in turn, bars grow from their left. ──
-  let current = '';
-  function show(key) {
+  // ── Changing the page: the old one lifts away, the new one's parts rise in turn, bars grow from their left. ──
+  function show(key, { quiet = false } = {}) {
     const p = pages[key]();
-    current = key;
+    current_ = key;
     const old = page.firstElementChild;
-    if (old) { old.style.pointerEvents = 'none'; exit(old, { y: -10, scale: 1 }).finished.then(() => old.remove(), () => old.remove()); }
+    if (old && quiet) old.remove();
+    else if (old) { old.style.pointerEvents = 'none'; exit(old, { y: -10, scale: 1 }).finished.then(() => old.remove(), () => old.remove()); }
     const next = document.createElement('div');
     next.className = 'app-layer';
     next.innerHTML = p.html;
     page.append(next);
-    K.setRail(app, p.view);
-    for (const [node, s] of [[title, p.title], [sub, p.sub]]) {
-      if (node.textContent === s) continue;
-      node.textContent = s;
-      done(animate(node, [{ opacity: 0, transform: 'translateY(6px)' }, { opacity: 1, transform: 'none' }], { preset: 'default' }));
+    setNav(app, p.view);
+    const control = app.querySelector('[data-control]');
+    if (control) control.textContent = p.who || 'You';
+    const [t, s] = p.title ? [p.title, p.sub] : heading(id, p.view || 'overview');
+    for (const [node, text] of [[title, t], [sub, s]]) {
+      if (node.textContent === text) continue;
+      node.textContent = text;
+      if (!quiet) done(animate(node, [{ opacity: 0, transform: 'translateY(6px)' }, { opacity: 1, transform: 'none' }], { preset: 'default' }));
     }
+    if (key === 'overview') { trail = [K.TREE]; fillMaps(next, { as: 'button' }); }
+    if (quiet) return;
     [...next.children].forEach((c, i) => done(enter(c, { y: 16, scale: 1, delay: 110 + i * 65 })));
     next.querySelectorAll('.abar u i, [data-drive-fill]').forEach((b, i) => done(animate(b, [{ transform: 'scaleX(0)' }, { transform: 'none' }], { preset: 'default', delay: 260 + i * 70 })));
-    if (key === 'overview') { trail = [K.TREE]; drawMap(next); }
+    next.querySelectorAll('.tile').forEach((tile, i) => done(animate(tile, [{ opacity: 0, transform: 'scale(.8)' }, { opacity: 1, transform: 'none' }], { preset: 'paper', delay: 200 + i * 45 })));
   }
 
-  // ── The overview's map goes inside a folder when you click its tile, and back out from its title. ──
-  function drawMap(layer, from = null) {
-    const card = layer.querySelector('.amapc'), map = card.querySelector('[data-map]');
-    const node = trail[trail.length - 1];
+  // ── In the layouts that draw a folder map, it goes inside a folder when you click its tile, and back out. ──
+  function drawMap(layer, from) {
+    const map = layer.querySelector('[data-map]'), node = trail[trail.length - 1];
     const W = map.clientWidth, H = map.clientHeight;
-    card.querySelector('[data-map-title]').innerHTML = trail.length > 1
-      ? `<button type="button" class="chat-pill" data-up aria-label="Back to ${K.esc(trail[trail.length - 2].name)}">← ${K.esc(trail[trail.length - 2].name)}</button> ${K.esc(node.name)}`
-      : 'Where the space goes';
-    card.querySelector('[data-map-sub]').textContent = trail.length > 1 ? `Inside ${trail.map((t) => t.name).join(' / ')} · measured disk allocation` : 'Immediate children · measured disk allocation';
+    const up = trail.length > 1 ? `<button type="button" class="chat-pill" data-up aria-label="Back to ${K.esc(trail[trail.length - 2].name)}">← ${K.esc(trail[trail.length - 2].name)}</button>` : '';
+    const mapTitle = layer.querySelector('[data-map-title]'), mapSub = layer.querySelector('[data-map-sub]');
+    if (mapTitle) {
+      mapTitle.innerHTML = up ? `${up} ${K.esc(node.name)}` : 'Where the space goes';
+      mapSub.textContent = up ? `Inside ${trail.map((t) => t.name).join(' / ')} · measured disk allocation` : 'Immediate children · measured disk allocation';
+    } else {
+      map.querySelector('.map-up')?.remove();
+      if (up) map.insertAdjacentHTML('beforeend', `<div class="map-up">${up}<b>${K.esc(node.name)}</b></div>`);
+    }
     const fresh = document.createElement('div');
     fresh.className = 'amap-l';
     fresh.innerHTML = K.tiles(node, W, H, { as: 'button', hint: true });
     const old = map.querySelector('.amap-l');
-    map.append(fresh);
-    if (!old || !old.children.length) { old?.remove(); fresh.querySelectorAll('.tile').forEach((t, i) => done(animate(t, [{ opacity: 0, transform: 'scale(.8)' }, { opacity: 1, transform: 'none' }], { preset: 'paper', delay: 200 + i * 45 }))); return; }
+    map.prepend(fresh);
     // `from`: the tile that was opened (going in) or that we come back out of. The two layers trade places through it.
-    const r = from?.rect;
-    if (!r) { done(animate(fresh, [{ opacity: 0 }, { opacity: 1 }], { preset: 'default' })); old.remove(); return; }
+    const r = from.rect;
     const into = `translate(${-r.x / r.w * 100}%, ${-r.y / r.h * 100}%) scale(${1 / r.w}, ${1 / r.h})`, outOf = `translate(${r.x * 100}%, ${r.y * 100}%) scale(${r.w}, ${r.h})`;
     old.style.pointerEvents = 'none';
-    if (from.dir > 0) {
-      animate(old, [{ transform: 'none', opacity: 1 }, { transform: into, opacity: 0 }], { preset: 'default' }).finished.then(() => old.remove(), () => old.remove());
-      done(animate(fresh, [{ transform: outOf, opacity: 0 }, { transform: 'none', opacity: 1 }], { preset: 'default' }));
-    } else {
-      animate(old, [{ transform: 'none', opacity: 1 }, { transform: outOf, opacity: 0 }], { preset: 'default' }).finished.then(() => old.remove(), () => old.remove());
-      done(animate(fresh, [{ transform: into, opacity: 0 }, { transform: 'none', opacity: 1 }], { preset: 'default' }));
-    }
+    const [leave, arrive] = from.dir > 0 ? [into, outOf] : [outOf, into];
+    animate(old, [{ transform: 'none', opacity: 1 }, { transform: leave, opacity: 0 }], { preset: 'default' }).finished.then(() => old.remove(), () => old.remove());
+    done(animate(fresh, [{ transform: arrive, opacity: 0 }, { transform: 'none', opacity: 1 }], { preset: 'default' }));
   }
-  page.addEventListener('click', (ev) => {
+  function onPage(ev) {
     const layer = page.lastElementChild;
     const go = ev.target.closest('[data-go]'), up = ev.target.closest('[data-up]');
-    if (go && current === 'overview') {
+    if (go && current_ === 'overview') {
       const map = layer.querySelector('[data-map]'), node = trail[trail.length - 1], i = +go.dataset.go;
       const rect = K.rectsOf(node, map.clientWidth, map.clientHeight)[i];
       trail.push(node.kids[i]);
       drawMap(layer, { rect, dir: 1 });
-    } else if (up && current === 'overview') {
+    } else if (up && current_ === 'overview') {
       const map = layer.querySelector('[data-map]'), child = trail.pop(), node = trail[trail.length - 1];
       const rect = K.rectsOf(node, map.clientWidth, map.clientHeight)[node.kids.indexOf(child)];
       drawMap(layer, { rect, dir: -1 });
@@ -129,7 +127,7 @@ export default function assistant(stage) {
       say({ act: 'You went back to your own view.' });
       show('overview');
     }
-  });
+  }
 
   // ── The conversation ──
   const clock = () => { const d = new Date(); return `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`; };
@@ -161,7 +159,7 @@ export default function assistant(stage) {
       await wait(350);
       say({
         text: 'These grew the most since the previous scan. Growth needs two scans of the same place, so the list stays empty until then.',
-        extra: `<div class="chat-card" style="border-color:var(--border);background:color-mix(in srgb, var(--surface) 70%, transparent)"><b>What grew</b>${K.GROWTH.slice(0, 4).map((g) => `<div class="chat-act"><span>${g.name}</span><b class="up" style="color:var(--red)">+${K.fmt(g.growth)}</b></div>`).join('')}
+        extra: `<div class="chat-card chat-card-plain"><b>What grew</b>${K.GROWTH.slice(0, 4).map((g) => `<div class="chat-act"><span>${g.name}</span><b class="up">+${K.fmt(g.growth)}</b></div>`).join('')}
           <div class="chat-card-b"><button type="button" class="chat-pill" data-chat-view="growth">Open What's growing</button></div></div>`,
       });
     } else if (key) {
@@ -180,7 +178,7 @@ export default function assistant(stage) {
   }
 
   // Another agent: it may not move your screen until you say so.
-  async function hermes() {
+  function hermes() {
     if (busy) return;
     put(`<div class="chat-card" data-card>
       <div class="chat-card-h">${K.icon('bot')}Hermes wants to show you something</div>
@@ -188,21 +186,20 @@ export default function assistant(stage) {
       <div class="chat-card-b"><button type="button" class="chat-pill" data-card-yes>Show me</button><button type="button" class="chat-pill" data-card-no>Not now</button><button type="button" class="chat-pill" data-card-always>Always allow Hermes</button></div>
     </div>`);
   }
-
-  log.addEventListener('click', (ev) => {
+  function onLog(ev) {
     const t = ev.target;
     const card = t.closest('[data-card]');
     if (t.closest('[data-chat-back]')) { say({ act: 'You went back to your own view.' }); show('overview'); }
     else if (t.closest('[data-chat-view]')) show(t.closest('[data-chat-view]').dataset.chatView);
-    else if (t.closest('[data-chat-ask]')) { const k = t.closest('[data-chat-ask]').dataset.chatAsk; type(k); }
+    else if (t.closest('[data-chat-ask]')) type(t.closest('[data-chat-ask]').dataset.chatAsk);
     else if (card && t.closest('[data-card-no]')) { card.remove(); say({ act: 'You answered Not now. Nothing moved.' }); }
     else if (card && (t.closest('[data-card-yes]') || t.closest('[data-card-always]'))) {
       const always = !!t.closest('[data-card-always]');
       card.remove();
-      say({ act: 'Hermes showed “Largest files”', back: true, note: always ? 'Hermes is now an agent you trust. Remove it in Settings whenever you like.' : '' });
+      say({ act: `Hermes showed “${HEADS.files[0]}”`, back: true, note: always ? 'Hermes is now an agent you trust. Remove it in Settings whenever you like.' : '' });
       show('videos');
     }
-  });
+  }
 
   // A chip types its question into the box first, so you see the same thing you would do yourself.
   async function type(key) {
@@ -215,8 +212,7 @@ export default function assistant(stage) {
     input.value = '';
     ask(key, text);
   }
-  for (const c of chips) c.addEventListener('click', () => (c.dataset.ask === 'hermes' ? hermes() : type(c.dataset.ask)));
-  form.addEventListener('submit', (ev) => {
+  function onSubmit(ev) {
     ev.preventDefault();
     const text = input.value.trim();
     if (!text || busy) return;
@@ -224,8 +220,31 @@ export default function assistant(stage) {
     const q = text.toLowerCase();
     const key = /grow|grew|bigger|accumulat|changed/.test(q) ? 'growth' : /plan|free|room|clean|delete|remove/.test(q) ? 'plan' : /project|folder|taking|using|space/.test(q) ? 'projects' : '';
     ask(key, text);
-  });
+  }
+  for (const c of chips) c.addEventListener('click', () => (c.dataset.ask === 'hermes' ? hermes() : type(c.dataset.ask)));
 
-  show('overview');
+  // ── The window, in a layout. Redrawing it keeps the conversation, what is typed and the page that is up. ──
+  function build(look) {
+    const kept = log ? [...log.children] : [], typed = input?.value || '';
+    slot.querySelector('.app')?.remove();
+    id = look; L = layout(id);
+    slot.insertAdjacentHTML('beforeend', L.shell({ chat: true }));
+    app = slot.querySelector('.app'); page = app.querySelector('[data-app-page]');
+    log = app.querySelector('[data-chat-log]'); input = app.querySelector('[data-chat-input]');
+    title = app.querySelector('[data-app-title]'); sub = app.querySelector('[data-app-sub]');
+    log.append(...kept); input.value = typed;
+    page.addEventListener('click', onPage);
+    app.querySelector('.app-body').addEventListener('click', (ev) => { if (!page.contains(ev.target) && ev.target.closest('[data-back]')) onPage(ev); });
+    log.addEventListener('click', onLog);
+    app.querySelector('[data-chat-form]').addEventListener('submit', onSubmit);
+    show(current_, { quiet: kept.length > 0 });
+  }
+  build(current());
   say({ text: 'Ask about this demo library, or pick a question above.' });
+
+  let wanted = id;
+  const catchUp = () => { if (wanted !== id) build(wanted); };
+  const isNear = () => { const r = stage.getBoundingClientRect(); return r.top < innerHeight * 1.5 && r.bottom > -innerHeight * 0.5; };
+  onLook((look) => { wanted = look; if (isNear()) catchUp(); else whenIdle(catchUp); });
+  new IntersectionObserver((entries) => { if (entries.some((e) => e.isIntersecting)) catchUp(); }, { rootMargin: '60% 0px' }).observe(stage);
 }

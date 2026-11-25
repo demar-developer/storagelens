@@ -1,4 +1,4 @@
-// What the landing pages share: springs handed to CSS, the calm-motion button, reveals, split headlines, counters,
+// What the whole landing page runs on: springs handed to CSS, the calm-motion button, reveals, split headlines, counters,
 // the nav, the light on cards, the download buttons, and loading each interactive piece. Rules: site/README.md.
 import { motion } from './motion/motion.mjs';
 import { animate, enter, ticker } from './motion/live.mjs';
@@ -122,7 +122,7 @@ export function boot(pieces) {
   // ── Download buttons. The one in the last section is an ordinary link to the app's file, written in the page. The
   //    same button elsewhere leads to that section until this runs; from then on it downloads too and brings the
   //    section into view, because that is where the page says what Windows will ask next. Nothing is fetched by
-  //    script: the browser asks for the file and saves it. (On the pages with looks, js/looks.mjs keeps every one
+  //    script: the browser asks for the file and saves it. (js/looks.mjs keeps every one
   //    of these links on the app of the look that is on.) ──
   const mainLink = document.querySelector('a[data-download-main]');
   const getSection = document.getElementById('get');

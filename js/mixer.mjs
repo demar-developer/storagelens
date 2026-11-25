@@ -1,10 +1,10 @@
 // Layout and theme, mixed. A layout is the app you download; a theme is the picker in its header, and any of the
 // seven themes can dress any of the seven layouts. The window here is drawn live (js/layouts.mjs) in the chosen
 // layout, with the chosen theme's colours, corners and type, so all 49 pairs can be shown. "Surprise me" picks one.
-import { animate } from '../../js/motion/live.mjs';
-import { once } from '../../js/core.mjs';
-import { LOOKS, ids, look, current, onLook } from '../../js/looks.mjs';
-import { layout as layoutOf, heading, setNav, fillMaps } from '../../js/layouts.mjs';
+import { animate } from './motion/live.mjs';
+import { once } from './core.mjs';
+import { LOOKS, ids, look, current, onLook } from './looks.mjs';
+import { layout as layoutOf, heading, setNav, fillMaps } from './layouts.mjs';
 
 const whenIdle = window.requestIdleCallback ? (f) => requestIdleCallback(f, { timeout: 1500 }) : (f) => setTimeout(f, 200);
 
