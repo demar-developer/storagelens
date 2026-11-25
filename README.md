@@ -185,8 +185,12 @@ Version 0.4.0 preview, 24 November 2026. These links always give the newest vers
 
 > [!IMPORTANT]
 > **Windows will ask you to confirm.** The files are not code-signed yet, so on a downloaded copy Windows shows
-> "Windows protected your PC". Choose <kbd>More info</kbd>, then <kbd>Run anyway</kbd>. Your browser may also say
-> the file is not commonly downloaded: choose to keep it.
+> "Windows protected your PC". Choose <kbd>Run anyway</kbd>; if you don't see it, choose <kbd>More info</kbd> first.
+> Your browser may also say the file is not commonly downloaded: choose to keep it.
+>
+> **Where Smart App Control is on, expect StorageLens to be blocked.** It stops apps that are not signed and that
+> Microsoft does not know yet, and it offers no "Run anyway". Windows Security > App & browser control shows whether
+> it is on. Windows has no setting to allow a single app there.
 
 <a href=".github/assets/setup.webp"><img src=".github/assets/setup.webp" width="720" alt="The Setup window of StorageLens Atlas: a picture of the app on the left; on the right the two folders it will use, a choice to add a desktop shortcut, and the buttons Cancel and Install"></a>
 
@@ -254,6 +258,10 @@ sent.
 Because the files are not code-signed yet, and Windows shows that message for any new unsigned program that came
 from the internet. It says nothing about what the program does. You can check a download against its checksum
 (above) before you open it.
+
+Where Smart App Control is on (Windows Security > App & browser control), Windows goes further: it blocks an
+unsigned app that Microsoft does not know yet, with no "Run anyway" and no setting to allow a single app. Expect
+StorageLens to be blocked on such a PC until it is signed.
 
 </details>
 
