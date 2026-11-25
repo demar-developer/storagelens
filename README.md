@@ -11,7 +11,7 @@ Read-only by design: it measures everything and changes nothing.
 
 <a href="#one-scan-seven-ways-to-see-it"><img src=".github/assets/button-get.svg" height="46" alt="Get StorageLens Free"></a>
 
-[The seven layouts](#one-scan-seven-ways-to-see-it) · [How it works](#from-a-blur-of-files-to-a-clear-decision) · [The Assistant](#ask-in-your-own-words-watch-the-screen-answer) · [Privacy](#measures-everything-changes-nothing) · [Install](#download-and-install) · [What's new](CHANGELOG.md)
+**[Website](https://demar-developer.github.io/storagelens/)** · [The seven layouts](#one-scan-seven-ways-to-see-it) · [How it works](#from-a-blur-of-files-to-a-clear-decision) · [The Assistant](#ask-in-your-own-words-watch-the-screen-answer) · [Privacy](#measures-everything-changes-nothing) · [Install](#download-and-install) · [What's new](CHANGELOG.md)
 
 [![Version](https://img.shields.io/github/v/release/demar-developer/storagelens?label=version&color=3b8cf5&labelColor=121d33)](https://github.com/demar-developer/storagelens/releases/latest)
 [![Downloads](https://img.shields.io/github/downloads/demar-developer/storagelens/total?label=downloads&color=3b8cf5&labelColor=121d33)](https://github.com/demar-developer/storagelens/releases)
